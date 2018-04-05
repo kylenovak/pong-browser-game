@@ -1,3 +1,5 @@
+import './styles/canvas.scss'
+
 function test() {
   alert("Hello, World!")
 }
