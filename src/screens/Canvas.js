@@ -5,8 +5,8 @@ import './styles/canvas.css';
 class Canvas extends Component {
   render() {
     return (
-      <canvas id="pongBrowserGameCanvas"
-        className="pongBrowserGameScreen"
+      <canvas id="canvas"
+        className="screen"
         width={this.props.width}
         height={this.props.height}
         onMouseMove={this.props.handleMouseMove}
