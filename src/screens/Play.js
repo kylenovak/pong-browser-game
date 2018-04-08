@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Score from './Score';
+import Score from './partials/Score';
 
 class Play extends Component {
   render() {

@@ -126,7 +126,7 @@ class Game extends Component {
           />
 
           <Home show={this.state.activeScreenId === 'home'}
-            handleButtonClick={this.handleScreenButtonClick}/>
+            handleButtonClick={this.handleScreenButtonClick} />
 
           <Settings show={this.state.activeScreenId === 'settings'}
             handleButtonClick={this.handleScreenButtonClick} />

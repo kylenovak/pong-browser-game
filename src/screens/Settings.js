@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
-import Header from './Header';
-import Footer from './Footer';
+import Header from './partials/Header';
+import Footer from './partials/Footer';
 
 class Settings extends Component {
   render() {
