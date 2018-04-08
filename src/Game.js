@@ -27,8 +27,10 @@ class Game extends Component {
 
   render() {
     return (
-      <div id="pongBrowserGameContainer" style={{width: `${this.props.width}px`, height: `${this.props.height}px`}}>
-        <Canvas width={this.props.width} height={this.props.height} handleMouseMove={this.state.handleMouseMove} />
+      <div id="pongBrowserGameWrapper">
+        <div id="pongBrowserGameContainer" style={{width: `${this.props.width}px`, height: `${this.props.height}px`}}>
+          <Canvas width={this.props.width} height={this.props.height} handleMouseMove={this.state.handleMouseMove} />
+        </div>
       </div>
     );
   }
