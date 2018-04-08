@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
 
+import Header from './Header';
+
 import './styles/home.css';
 
 class Home extends Component {
   render() {
     return (
-      <div id="home" className="screen">
-        <h1>Pong</h1>
-        <button id="play" onMouseDown={this.props.handleMouseDown}>Play</button>
-        <button id="quit" onMouseDown={this.props.handleMouseDown}>Quit</button>
+      <div id="home" className={`screen ${this.props.show ? '' : 'hide'}`}>
+        <Header />
+        <button id="play-btn" onMouseDown={this.props.handleButtonClick}>Play</button>
+        <button id="settings-btn" onMouseDown={this.props.handleButtonClick}>Settings</button>
+        <button id="about-btn" onMouseDown={this.props.handleButtonClick}>About</button>
       </div>
     );
   }

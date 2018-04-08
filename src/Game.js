@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 
 // import screen components
-import Canvas from './screens/Canvas';
-import Score from './screens/Score';
+import Play from './screens/Play';
 import Home from './screens/Home';
+import Settings from './screens/Settings';
+import About from './screens/About';
 
 // import styles
 import './styles/game.css';
@@ -11,10 +12,14 @@ import './styles/game.css';
 class Game extends Component {
   constructor(props) {
     super(props);
-    
+
+    this.state = {
+      activeScreenId: 'home'
+    };
+
     this.loop = this.loop.bind(this);
     this.handleCanvasScreenMouseMove = this.handleCanvasScreenMouseMove.bind(this);
-    this.handleHomeScreenMouseDown = this.handleHomeScreenMouseDown.bind(this);
+    this.handleScreenButtonClick = this.handleScreenButtonClick.bind(this);
 
     // mouse coords
     this.x = 0;
@@ -38,11 +43,6 @@ class Game extends Component {
     this.canvas = document.getElementById('canvas');
     this.canvasContext = this.canvas.getContext('2d');
     this.canvasRect = this.canvas.getBoundingClientRect();
-
-    this.hideAllScreens();
-
-    // default to showing the home screen
-    this.showScreen('home');
   }
 
   logic() {
@@ -50,6 +50,7 @@ class Game extends Component {
   }
 
   draw(timestamp) {
+    // interpolate the number of pixels to move by
     let pixelOffset = this.pixelsToMoveBy(timestamp);
     // TODO: canvas draw
   }
@@ -66,7 +67,7 @@ class Game extends Component {
     }
     else {
       window.cancelAnimationFrame(this.animationFrame);
-      this.showScreen('home');
+      this.setState({activeScreenId: 'home'});
     }
   }
 
@@ -82,55 +83,56 @@ class Game extends Component {
     this.y = e.clientY - this.canvasRect.y;
   }
 
-  handleHomeScreenMouseDown(e) {
-    let buttonId = e.target.id;
+  handleScreenButtonClick(e) {
+    let activeScreenId = '';
+
+    const buttonId = e.target.id;
 
     switch (buttonId) {
-      case 'play':
+      case 'play-btn':
+        activeScreenId = 'play';
+        // reset for new game
         this.gameEnded = false;
-        this.hideAllScreens();
-        this.showScreen('canvas');
-        this.showScreen('score');
         // start game loop
         this.loop();
         break;
-      case 'quit':
-        this.gameEnded = true;
+      case 'settings-btn':
+        activeScreenId = 'settings';
+        break;
+      case 'about-btn':
+        activeScreenId = 'about';
+        break;
+      case 'return-btn':
+        // return to the home screen
+        activeScreenId = 'home';
         break;
       default:
+        // default screen is home
+        activeScreenId = 'home';
         break;
     }
-  }
 
-  showScreen(id) {
-    let screen = document.getElementById(id);
-    screen.style.display = 'block';
-  }
-
-  hideScreen(id) {
-    let screen = document.getElementById(id);
-    screen.style.display = 'none';
-  }
-
-  hideAllScreens() {
-    let screens = document.getElementsByClassName('screen');
-    for (let i = 0; i < screens.length; i++) {
-      screens[i].style.display = 'none';
-    }
+    this.setState({activeScreenId: activeScreenId});
   }
 
   render() {
     return (
       <div id="wrapper">
         <div id="container" style={{width: `${this.props.width}px`, height: `${this.props.height}px`}}>
-          <Canvas handleMouseMove={this.handleCanvasScreenMouseMove}
+          <Play show={this.state.activeScreenId === 'play'}
+            handleMouseMove={this.handleCanvasScreenMouseMove}
             width={this.props.width}
             height={this.props.height}
           />
 
-          <Score />
+          <Home show={this.state.activeScreenId === 'home'}
+            handleButtonClick={this.handleScreenButtonClick}/>
 
-          <Home handleMouseDown={this.handleHomeScreenMouseDown} />
+          <Settings show={this.state.activeScreenId === 'settings'}
+            handleButtonClick={this.handleScreenButtonClick} />
+
+          <About show={this.state.activeScreenId === 'about'}
+            handleButtonClick={this.handleScreenButtonClick} />
         </div>
       </div>
     );
