@@ -8,7 +8,7 @@ class Home extends Component {
       <div id="home" className={`screen ${this.props.show ? '' : 'hide'}`}>
         <Header />
         <button id="play-btn" onMouseDown={this.props.handleButtonClick}>Play</button>
-        <button id="settings-btn" onMouseDown={this.props.handleButtonClick}>Settings</button>
+        <button id="difficulty-btn" onMouseDown={this.props.handleButtonClick}>Difficulty</button>
         <button id="about-btn" onMouseDown={this.props.handleButtonClick}>About</button>
       </div>
     );

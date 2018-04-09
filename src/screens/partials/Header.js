@@ -5,8 +5,8 @@ class Header extends Component {
     super(props);
 
     this.headerStyle = {
-      color: '#fff',
-      fontSize: '20px'
+      fontSize: '20px',
+      marginBottom: '60px'
     };
   }
 

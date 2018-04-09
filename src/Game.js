@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 // import screen components
 import Play from './screens/Play';
 import Home from './screens/Home';
-import Settings from './screens/Settings';
+import Difficulty from './screens/Difficulty';
 import About from './screens/About';
 
 // import styles
@@ -14,12 +14,14 @@ class Game extends Component {
     super(props);
 
     this.state = {
-      activeScreenId: 'home'
+      activeScreenId: 'home',
+      difficultyLevel: 'easy'
     };
 
     this.loop = this.loop.bind(this);
     this.handleCanvasScreenMouseMove = this.handleCanvasScreenMouseMove.bind(this);
     this.handleScreenButtonClick = this.handleScreenButtonClick.bind(this);
+    this.handleDifficultySelect = this.handleDifficultySelect.bind(this);
 
     // mouse coords
     this.x = 0;
@@ -96,8 +98,8 @@ class Game extends Component {
         // start game loop
         this.loop();
         break;
-      case 'settings-btn':
-        activeScreenId = 'settings';
+      case 'difficulty-btn':
+        activeScreenId = 'difficulty';
         break;
       case 'about-btn':
         activeScreenId = 'about';
@@ -115,6 +117,30 @@ class Game extends Component {
     this.setState({activeScreenId: activeScreenId});
   }
 
+  handleDifficultySelect(e) {
+    let difficultyLevel = '';
+
+    const difficultyBtnId = e.target.id;
+
+    switch(difficultyBtnId) {
+      case 'easy-btn':
+        difficultyLevel = 'easy';
+        break;
+      case 'medium-btn':
+        difficultyLevel = 'medium';
+        break;
+      case 'hard-btn':
+        difficultyLevel = 'hard';
+        break;
+      default:
+        // default to easy difficulty
+        difficultyLevel = 'easy';
+        break;
+    }
+
+    this.setState({difficultyLevel: difficultyLevel});
+  }
+
   render() {
     return (
       <div id="wrapper">
@@ -128,8 +154,11 @@ class Game extends Component {
           <Home show={this.state.activeScreenId === 'home'}
             handleButtonClick={this.handleScreenButtonClick} />
 
-          <Settings show={this.state.activeScreenId === 'settings'}
-            handleButtonClick={this.handleScreenButtonClick} />
+          <Difficulty show={this.state.activeScreenId === 'difficulty'}
+            handleButtonClick={this.handleScreenButtonClick}
+            handleDifficultySelect={this.handleDifficultySelect}
+            difficultyLevel={this.state.difficultyLevel}
+          />
 
           <About show={this.state.activeScreenId === 'about'}
             handleButtonClick={this.handleScreenButtonClick} />
