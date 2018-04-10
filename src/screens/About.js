@@ -17,7 +17,10 @@ class About extends Component {
       <div id="about" className={`screen ${this.props.show ? '' : 'hide'}`}>
         <Header />
         <h2>About</h2>
-        <p style={this.paragraphStyle}>This is a remake, built by <a href="https://www.kylejnovak.com" target="_blank">Kyle J. Novak</a> with ECMAScript 2015 (ES6) and ReactJS, of the classic Pong game.</p>
+        <p style={this.paragraphStyle}>
+          <span>This is a remake, built by <a href="https://www.kylejnovak.com" target="_blank">Kyle J. Novak</a></span>
+          <span> with ECMAScript 2015 (ES6) and ReactJS, of the 1972 Atari Pong game.</span>
+        </p>
         <Footer handleButtonClick={this.props.handleButtonClick} />
       </div>
     );
