@@ -26,9 +26,8 @@ class Game extends Component {
     this.handleScreenButtonClick = this.handleScreenButtonClick.bind(this);
     this.handleDifficultySelect = this.handleDifficultySelect.bind(this);
 
-    // mouse coords
-    this.x = 0;
-    this.y = 0;
+    // initial state of no mouse movement
+    this.mouseY = -1;
 
     // time it took to draw one frame
     this.prevTimestamp = 0;
@@ -47,6 +46,7 @@ class Game extends Component {
   init() {
     this.canvas = document.getElementById('canvas');
     this.canvasContext = this.canvas.getContext('2d');
+    // gets the position of the canvas relative to the viewport
     this.canvasRect = this.canvas.getBoundingClientRect();
 
     // canvas draw styles
@@ -77,6 +77,9 @@ class Game extends Component {
   draw(timestamp) {
     // interpolate the number of pixels to move by
     let pixelOffset = this.pixelsToMoveBy(timestamp);
+
+    // clear the canvas
+    this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     // draw the table background
     this.drawTableBackground();
@@ -109,13 +112,13 @@ class Game extends Component {
     this.canvasContext.fillRect(this.computerPaddleX, y, this.paddleWidth, this.paddleHeight);
   }
 
-  drawPlayerPaddle(y) {
-    if (y === undefined) {
-      // set initial y position if y is not passed in
-      y = this.initialPaddleY;
+  drawPlayerPaddle() {
+    if (this.mouseY < 0) {
+      // set initial y position if no initial mouse movement
+      this.mouseY = this.initialPaddleY;
     }
     // draw the player's paddle
-    this.canvasContext.fillRect(this.playerPaddleX, y, this.paddleWidth, this.paddleHeight);
+    this.canvasContext.fillRect(this.playerPaddleX, this.mouseY, this.paddleWidth, this.paddleHeight);
   }
 
   drawBall(x, y) {
@@ -157,8 +160,7 @@ class Game extends Component {
   }
 
   handleCanvasScreenMouseMove(e) {
-    this.x = e.clientX - this.canvasRect.x;
-    this.y = e.clientY - this.canvasRect.y;
+    this.mouseY = e.clientY - this.canvasRect.y;
   }
 
   handleScreenButtonClick(e) {
