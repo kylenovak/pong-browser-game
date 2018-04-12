@@ -8,6 +8,7 @@ import About from './screens/About';
 
 // import entities
 import Ball from './entities/Ball';
+import Paddle from './entities/Paddle';
 
 // import styles
 import './styles/game.css';
@@ -56,29 +57,47 @@ class Game extends Component {
     this.lineDashSize = 5;
     this.linSpaceSize = 3;
 
-    // game piece constants
-    this.paddleWidth = 10;
-    this.paddleHeight = 50;
-    this.playerPaddleX = this.canvas.width - this.tablePadding - this.paddleWidth;
-    this.computerPaddleX = this.tablePadding;
-    this.initialPaddleY = (this.canvas.height / 2) - (this.paddleHeight / 2);
-    this.playerPaddleY = this.initialPaddleY;
-    this.computerPaddleY = this.initialPaddleY;
+    // init game entities
+    this.initPaddles();
+    this.initBall();
+  }
 
-    // create ball
+  initPaddles() {
+    const paddleWidth = 10;
+    const paddleHeight = 50;
+
+    // set width and height for paddles
+    Paddle.width = paddleWidth;
+    Paddle.height = paddleHeight;
+
+    const initialPaddleY = (this.canvas.height / 2) - (paddleHeight / 2);
+    const playerPaddleX = this.canvas.width - this.tablePadding - paddleWidth;
+    const playerPaddleY = initialPaddleY;
+    const computerPaddleX = this.tablePadding;
+    const computerPaddleY = initialPaddleY;
+
+    this.playerPaddle = new Paddle(playerPaddleX, playerPaddleY);
+    this.computerPaddle = new Paddle(computerPaddleX, computerPaddleY);
+  }
+
+  initBall() {
     const size = 10; // square size in pixels
     const speed = 300; // speed in pixels per seconds
+
     // set the ball in the center of the canvas
     const x = (this.canvas.width / 2) - (size / 2) - (this.lineWidth / 2);
     const y = (this.canvas.height / 2) - (size / 2);
+
     const angle = Math.floor(Math.random() * 31) + 15; // angle can be 15 - 45
+
+    // definine table bounds for the ball
     const tablePerimeter = {
       top: this.tablePadding + this.lineWidth,
       bottom: this.canvas.height - (this.tablePadding + this.lineWidth) - size,
       left: 0,
       right: 0
     };
-    console.log(angle);
+
     this.ball = new Ball(x, y, speed, size, angle, tablePerimeter);
   }
 
@@ -134,15 +153,15 @@ class Game extends Component {
     this.canvasContext.fillRect(this.ball.x, this.ball.y, this.ball.size, this.ball.size);
 
     // draw the computer's paddle
-    this.canvasContext.fillRect(this.computerPaddleX, this.computerPaddleY, this.paddleWidth, this.paddleHeight);
+    this.canvasContext.fillRect(this.computerPaddle.x, this.computerPaddle.y, Paddle.width, Paddle.height);
 
     // draw the player's paddle
-    this.canvasContext.fillRect(this.playerPaddleX, this.playerPaddleY, this.paddleWidth, this.paddleHeight);
+    this.canvasContext.fillRect(this.playerPaddle.x, this.playerPaddle.y, Paddle.width, Paddle.height);
   }
 
   handleCanvasScreenMouseMove(e) {
     // set mouse y to the player paddle y coordinate
-    this.playerPaddleY = e.clientY - this.canvasRect.y;
+    this.playerPaddle.y = e.clientY - this.canvasRect.y;
   }
 
   handleScreenButtonClick(e) {
