@@ -6,6 +6,9 @@ import Home from './screens/Home';
 import Difficulty from './screens/Difficulty';
 import About from './screens/About';
 
+// import entities
+import Ball from './entities/Ball';
+
 // import styles
 import './styles/game.css';
 
@@ -26,16 +29,8 @@ class Game extends Component {
     this.handleScreenButtonClick = this.handleScreenButtonClick.bind(this);
     this.handleDifficultySelect = this.handleDifficultySelect.bind(this);
 
-    // initial state of no mouse movement
-    this.mouseY = -1;
-
-    // time it took to draw one frame
-    this.prevTimestamp = 0;
-
-    // define max game speed in pixels
-    const pixelsPerSecond = 100;
-    const millisecondsInSecond = 1000;
-    this.pixelsPerMillisecond = pixelsPerSecond / millisecondsInSecond;
+    // timestamp the previous frame was drawn at
+    this.prevTime = 0;
   }
 
   componentDidMount() {
@@ -55,112 +50,99 @@ class Game extends Component {
     this.canvasContext.lineWidth = 5;
 
     // table constants
-    this.verticalPadding = 20;
-    this.horizontalPadding = 25;
+    this.tablePadding = 20;
     this.lineWidth = 5;
-    this.centerLineX = (this.props.width / 2) - (this.lineWidth / 2);
+    this.centerLineX = (this.canvas.width / 2) - (this.lineWidth / 2);
     this.lineDashSize = 5;
     this.linSpaceSize = 3;
 
     // game piece constants
     this.paddleWidth = 10;
     this.paddleHeight = 50;
-    this.initialPaddleY = (this.props.height / 2) - (this.paddleHeight / 2);
-    this.computerPaddleX = this.horizontalPadding*2 - this.paddleWidth;
-    this.playerPaddleX = this.props.width - this.horizontalPadding*2;
+    this.playerPaddleX = this.canvas.width - this.tablePadding - this.paddleWidth;
+    this.computerPaddleX = this.tablePadding;
+    this.initialPaddleY = (this.canvas.height / 2) - (this.paddleHeight / 2);
+    this.playerPaddleY = this.initialPaddleY;
+    this.computerPaddleY = this.initialPaddleY;
+
+    // create ball
+    const size = 10; // square size in pixels
+    const speed = 300; // speed in pixels per seconds
+    // set the ball in the center of the canvas
+    const x = (this.canvas.width / 2) - (size / 2) - (this.lineWidth / 2);
+    const y = (this.canvas.height / 2) - (size / 2);
+    const angle = Math.floor(Math.random() * 31) + 15; // angle can be 15 - 45
+    const tablePerimeter = {
+      top: this.tablePadding + this.lineWidth,
+      bottom: this.canvas.height - (this.tablePadding + this.lineWidth) - size,
+      left: 0,
+      right: 0
+    };
+    console.log(angle);
+    this.ball = new Ball(x, y, speed, size, angle, tablePerimeter);
   }
 
-  logic() {
-    // TODO: handle game logic
-  }
+  loop(time = 0) {
+    // udpate entity states
+    this.update(time);
 
-  draw(timestamp) {
-    // interpolate the number of pixels to move by
-    let pixelOffset = this.pixelsToMoveBy(timestamp);
-
-    // clear the canvas
-    this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    // draw the table background
-    this.drawTableBackground();
-
-    // draw game pieces
-    this.drawComputerPaddle();
-    this.drawPlayerPaddle();
-    this.drawBall();
-  }
-
-  drawTableBackground() {
-    // draw table top border
-    this.canvasContext.fillRect(this.horizontalPadding, this.verticalPadding, this.props.width - this.horizontalPadding*2, this.lineWidth);
-    // draw table bottom border
-    this.canvasContext.fillRect(this.horizontalPadding, this.props.height - (this.verticalPadding + this.lineWidth), this.props.width - this.horizontalPadding*2, this.lineWidth);
-    // draw table center line
-    this.canvasContext.setLineDash([this.lineDashSize, this.linSpaceSize]);
-    this.canvasContext.beginPath();
-    this.canvasContext.moveTo(this.centerLineX, this.verticalPadding + this.lineWidth);
-    this.canvasContext.lineTo(this.centerLineX, this.props.height - (this.verticalPadding + this.lineWidth));
-    this.canvasContext.stroke();
-  }
-
-  drawComputerPaddle(y) {
-    if (y === undefined) {
-      // set initial y position if y is not passed in
-      y = this.initialPaddleY;
-    }
-    // draw the computer's paddle
-    this.canvasContext.fillRect(this.computerPaddleX, y, this.paddleWidth, this.paddleHeight);
-  }
-
-  drawPlayerPaddle() {
-    if (this.mouseY < 0) {
-      // set initial y position if no initial mouse movement
-      this.mouseY = this.initialPaddleY;
-    }
-    // draw the player's paddle
-    this.canvasContext.fillRect(this.playerPaddleX, this.mouseY, this.paddleWidth, this.paddleHeight);
-  }
-
-  drawBall(x, y) {
-    const size = 10; // width and height of the ball
-    if (x === undefined && y === undefined) {
-      // set initial x and y coordinates if none are passed in
-      x = (this.props.width / 2) - (size / 2) - (this.lineWidth / 2);
-      y = (this.props.height / 2) - (size / 2);
-    }
-    // draw the ball
-    this.canvasContext.fillRect(x, y, size, size);
-  }
-
-  drawScore() {
-    // TODO
-  }
-
-  loop(timestamp = 0) {
-    // handle game logic
-    this.logic();
     // draw the game
-    this.draw(timestamp);
+    this.draw();
 
     if (!this.gameOver) {
-      // keep animating if the game hasn't ended
+      // keep calling loop if the game isn't over
       this.animationFrame = window.requestAnimationFrame(this.loop);
     }
     else {
+      // stop the loop when the game is over
       window.cancelAnimationFrame(this.animationFrame);
+      // go to the home screen when the game is over
       this.setState({activeScreenId: 'home'});
     }
   }
 
-  pixelsToMoveBy(timestamp) {
-    const timeInMilliseconds = timestamp - this.prevTimestamp;
-    this.prevTimestamp = timestamp;
+  update(time) {
+    if (this.prevTime == 0) {
+      this.prevTime = time;
+    }
 
-    return timeInMilliseconds * this.pixelsPerMillisecond;
+    // get the time difference between frames
+    const deltaT = time - this.prevTime;
+
+    // update entity states
+    this.ball.update(deltaT);
+
+    this.prevTime = time;
+  }
+
+  draw() {
+    // clear the canvas before drawing
+    this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    // draw table top border
+    this.canvasContext.fillRect(this.tablePadding, this.tablePadding, this.canvas.width - this.tablePadding*2, this.lineWidth);
+    // draw table bottom border
+    this.canvasContext.fillRect(this.tablePadding, this.canvas.height - (this.tablePadding + this.lineWidth), this.canvas.width - this.tablePadding*2, this.lineWidth);
+    // draw table center line
+    this.canvasContext.setLineDash([this.lineDashSize, this.linSpaceSize]);
+    this.canvasContext.beginPath();
+    this.canvasContext.moveTo(this.centerLineX, this.tablePadding + this.lineWidth);
+    this.canvasContext.lineTo(this.centerLineX, this.canvas.height - (this.tablePadding + this.lineWidth));
+    this.canvasContext.stroke();
+
+    // draw the ball
+    this.canvasContext.fillRect(this.ball.x, this.ball.y, this.ball.size, this.ball.size);
+
+    // draw the computer's paddle
+    this.canvasContext.fillRect(this.computerPaddleX, this.computerPaddleY, this.paddleWidth, this.paddleHeight);
+
+    // draw the player's paddle
+    this.canvasContext.fillRect(this.playerPaddleX, this.playerPaddleY, this.paddleWidth, this.paddleHeight);
   }
 
   handleCanvasScreenMouseMove(e) {
-    this.mouseY = e.clientY - this.canvasRect.y;
+    // set mouse y to the player paddle y coordinate
+    this.playerPaddleY = e.clientY - this.canvasRect.y;
   }
 
   handleScreenButtonClick(e) {
