@@ -1,4 +1,4 @@
-#wrapper {
+.wrapper {
   position: absolute;
 
   -webkit-touch-callout: none; /* iOS Safari */
@@ -9,12 +9,12 @@
             user-select: none; /* Chrome and Opera */
 }
 
-#container {
+.container {
   color: #fff;
   background-color: #000;
 }
 
-#container button {
+.container button {
   outline: none;
 
   color: #fff;
@@ -29,28 +29,28 @@
   cursor: pointer;
 }
 
-#container button.active {
+.container button.active {
   color: #000;
   background-color: #fff;
 }
 
-#container button:hover {
+.container button:hover {
   color: #000;
   background-color: #fff;
 }
 
-#container button::-moz-focus-inner {
+.container button::-moz-focus-inner {
   border: 0;
 }
 
-#container h2 {
+.container h2 {
   font-size: 16px;
   color: #fff;
   margin-top: 0;
   margin-bottom: 20px;
 }
 
-#container ul {
+.container ul {
   padding: 0;
   margin: 0;
   list-style-type: none;

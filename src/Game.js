@@ -262,8 +262,8 @@ export default class Game extends Component {
 
   render() {
     return (
-      <div id="wrapper">
-        <div id="container" style={{width: `${this.props.width}px`, height: `${this.props.height}px`}}>
+      <div className="wrapper">
+        <div className="container" style={{width: `${this.props.width}px`, height: `${this.props.height}px`}}>
           <Play show={this.state.activeScreenId === 'play'}
             handleMouseMove={this.handleCanvasScreenMouseMove}
             handleButtonClick={this.handleScreenButtonClick}
