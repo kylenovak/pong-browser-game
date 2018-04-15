@@ -290,4 +290,4 @@ class Game extends Component {
   }
 }
 
-export default Game;
+module.exports = Game;
