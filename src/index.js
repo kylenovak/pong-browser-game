@@ -14,5 +14,3 @@ class Main extends Component {
 document.body.onload = function() {
   render(<Main />, document.getElementById('root'));
 }
-
-export default Main;

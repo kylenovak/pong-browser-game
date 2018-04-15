@@ -17,11 +17,20 @@ class Game extends Component {
   constructor(props) {
     super(props);
 
-    // initial game states
+    // whoever reaches 10 points first wins
+    this.playTo = 10;
+
     this.gameOver = false;
+    this.gameScore = {
+      player: 0,
+      computer: 0
+    };
+
     this.state = {
       activeScreenId: 'home',
-      difficultyLevel: 'medium'
+      difficultyLevel: 'medium',
+      gameScore: this.gameScore,
+      gameOver: this.gameOver
     };
 
     // bind methods and event handlers
@@ -58,17 +67,13 @@ class Game extends Component {
     this.linSpaceSize = 3;
 
     // init game entities
-    this.initPaddles();
     this.initBall();
+    this.initPaddles();
   }
 
   initPaddles() {
     const paddleWidth = 10;
     const paddleHeight = 50;
-
-    // set width and height for paddles
-    Paddle.width = paddleWidth;
-    Paddle.height = paddleHeight;
 
     const initialPaddleY = (this.canvas.height / 2) - (paddleHeight / 2);
     const playerPaddleX = this.canvas.width - this.tablePadding - paddleWidth;
@@ -76,29 +81,26 @@ class Game extends Component {
     const computerPaddleX = this.tablePadding;
     const computerPaddleY = initialPaddleY;
 
-    this.playerPaddle = new Paddle(playerPaddleX, playerPaddleY);
-    this.computerPaddle = new Paddle(computerPaddleX, computerPaddleY);
+    this.playerPaddle = new Paddle(playerPaddleX, playerPaddleY, paddleWidth, paddleHeight, this.ball);
+    this.computerPaddle = new Paddle(computerPaddleX, computerPaddleY, paddleWidth, paddleHeight, this.ball, true);
   }
 
   initBall() {
     const size = 10; // square size in pixels
-    const speed = 300; // speed in pixels per seconds
 
     // set the ball in the center of the canvas
     const x = (this.canvas.width / 2) - (size / 2) - (this.lineWidth / 2);
     const y = (this.canvas.height / 2) - (size / 2);
 
-    const angle = Math.floor(Math.random() * 31) + 15; // angle can be 15 - 45
-
-    // definine table bounds for the ball
-    const tablePerimeter = {
+    // define bounds for the ball
+    const bounds = {
       top: this.tablePadding + this.lineWidth,
       bottom: this.canvas.height - (this.tablePadding + this.lineWidth) - size,
-      left: 0,
-      right: 0
+      left: -size,
+      right: this.canvas.width
     };
 
-    this.ball = new Ball(x, y, speed, size, angle, tablePerimeter);
+    this.ball = new Ball(x, y, this.state.difficultyLevel, size, bounds);
   }
 
   loop(time = 0) {
@@ -115,8 +117,6 @@ class Game extends Component {
     else {
       // stop the loop when the game is over
       window.cancelAnimationFrame(this.animationFrame);
-      // go to the home screen when the game is over
-      this.setState({activeScreenId: 'home'});
     }
   }
 
@@ -130,6 +130,20 @@ class Game extends Component {
 
     // update entity states
     this.ball.update(deltaT);
+    if (this.ball.score(this.gameScore)) {
+      this.setState({gameScore: this.gameScore});
+    }
+    this.playerPaddle.update();
+    this.computerPaddle.update();
+
+    if (this.gameScore.player >= this.playTo) {
+      this.gameOver = true;
+      this.setState({gameOver: true});
+    }
+    else if (this.gameScore.computer >= this.playTo) {
+      this.gameOver = true;
+      this.setState({gameOver: true});
+    }
 
     this.prevTime = time;
   }
@@ -153,15 +167,27 @@ class Game extends Component {
     this.canvasContext.fillRect(this.ball.x, this.ball.y, this.ball.size, this.ball.size);
 
     // draw the computer's paddle
-    this.canvasContext.fillRect(this.computerPaddle.x, this.computerPaddle.y, Paddle.width, Paddle.height);
+    this.canvasContext.fillRect(this.computerPaddle.x, this.computerPaddle.y, this.computerPaddle.width, this.computerPaddle.height);
 
     // draw the player's paddle
-    this.canvasContext.fillRect(this.playerPaddle.x, this.playerPaddle.y, Paddle.width, Paddle.height);
+    this.canvasContext.fillRect(this.playerPaddle.x, this.playerPaddle.y, this.playerPaddle.width, this.playerPaddle.height);
+  }
+
+  reset() {
+    // reset game
+    this.gameOver = false;
+    this.gameScore.player = 0;
+    this.gameScore.computer = 0;
+    this.setState({
+      gameScore: this.gameScore,
+      gameOver: this.gameOver
+    });
+    this.prevTime = 0;
   }
 
   handleCanvasScreenMouseMove(e) {
-    // set mouse y to the player paddle y coordinate
-    this.playerPaddle.y = e.clientY - this.canvasRect.y;
+    // move player paddle y to mouse y
+    this.playerPaddle.move(e.clientY - this.canvasRect.y);
   }
 
   handleScreenButtonClick(e) {
@@ -172,8 +198,6 @@ class Game extends Component {
     switch (buttonId) {
       case 'play-btn':
         activeScreenId = 'play';
-        // reset for new game
-        this.gameOver = false;
         // start game loop
         this.loop();
         break;
@@ -182,6 +206,15 @@ class Game extends Component {
         break;
       case 'about-btn':
         activeScreenId = 'about';
+        break;
+      case 'retry-btn':
+        activeScreenId = 'play';
+        this.reset();
+        this.loop();
+        break;
+      case 'end-btn':
+        activeScreenId = 'home';
+        this.reset();
         break;
       case 'return-btn':
         // return to the home screen
@@ -217,6 +250,8 @@ class Game extends Component {
         break;
     }
 
+    this.ball.difficultyLevel = difficultyLevel;
+    this.ball.setSpeed(difficultyLevel);
     this.setState({difficultyLevel: difficultyLevel});
   }
 
@@ -226,8 +261,11 @@ class Game extends Component {
         <div id="container" style={{width: `${this.props.width}px`, height: `${this.props.height}px`}}>
           <Play show={this.state.activeScreenId === 'play'}
             handleMouseMove={this.handleCanvasScreenMouseMove}
+            handleButtonClick={this.handleScreenButtonClick}
             width={this.props.width}
             height={this.props.height}
+            gameScore={this.state.gameScore}
+            gameOver={this.state.gameOver}
           />
 
           <Home show={this.state.activeScreenId === 'home'}

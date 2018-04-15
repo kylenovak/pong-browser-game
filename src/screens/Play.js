@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import Score from './partials/Score';
+import End from './partials/End';
 
 class Play extends Component {
   render() {
@@ -10,7 +11,13 @@ class Play extends Component {
         onMouseMove={this.props.handleMouseMove}
         style={{cursor: 'none'}}
       >
-        <Score />
+
+        <Score gameScore={this.props.gameScore} />
+
+        <End gameOver={this.props.gameOver}
+          gameScore={this.props.gameScore}
+          handleButtonClick={this.props.handleButtonClick} />
+
         <canvas id="canvas"
           width={this.props.width}
           height={this.props.height}
