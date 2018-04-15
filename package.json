@@ -2,7 +2,7 @@
   "name": "pong-browser-game",
   "version": "1.0.0",
   "description": "",
-  "main": "src/Game.js",
+  "main": "public/bundle.js",
   "private": true,
   "scripts": {
     "start": "webpack-dev-server --mode development",

@@ -1,0 +1,71 @@
+#wrapper {
+  position: absolute;
+
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Chrome and Opera */
+}
+
+#container {
+  color: #fff;
+  background-color: #000;
+}
+
+#container button {
+  outline: none;
+
+  color: #fff;
+  background-color: #000;
+  border: 1px solid #fff;
+
+  width: 200px;
+  margin: 0 10%;
+  margin-bottom: 20px;
+  padding: 10px;
+
+  cursor: pointer;
+}
+
+#container button.active {
+  color: #000;
+  background-color: #fff;
+}
+
+#container button:hover {
+  color: #000;
+  background-color: #fff;
+}
+
+#container button::-moz-focus-inner {
+  border: 0;
+}
+
+#container h2 {
+  font-size: 16px;
+  color: #fff;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+#container ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.screen {
+  width: 100%;
+  height: 100%;
+
+  position: absolute;
+
+  text-align: center;
+  user-select: none;
+}
+
+.hide {
+  display: none;
+}
