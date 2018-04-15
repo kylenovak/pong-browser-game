@@ -81,6 +81,8 @@ class Game extends Component {
     const computerPaddleX = this.tablePadding;
     const computerPaddleY = initialPaddleY;
 
+    Paddle.difficultyLevel = this.state.difficultyLevel;
+
     this.playerPaddle = new Paddle(playerPaddleX, playerPaddleY, paddleWidth, paddleHeight, this.ball);
     this.computerPaddle = new Paddle(computerPaddleX, computerPaddleY, paddleWidth, paddleHeight, this.ball, true);
   }
@@ -252,6 +254,9 @@ class Game extends Component {
 
     this.ball.difficultyLevel = difficultyLevel;
     this.ball.setSpeed(difficultyLevel);
+
+    Paddle.difficultyLevel = difficultyLevel;
+
     this.setState({difficultyLevel: difficultyLevel});
   }
 

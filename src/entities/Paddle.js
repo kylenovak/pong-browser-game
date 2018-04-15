@@ -1,3 +1,5 @@
+let difficultyLevel = null;
+
 class Paddle {
   constructor(x, y, width, height, ball, isComputer = false) {
     this.x = x;
@@ -29,8 +31,32 @@ class Paddle {
   }
 
   autoMove() {
-    this.y = this.ball.y - (this.height / 2) + (this.ball.size / 2);
-    this.y2 = this.y + this.height;
+    let paddleSpeed = 1;
+    let difficulty = Paddle.difficultyLevel;
+
+    switch(difficulty) {
+      case 'easy':
+        // 0.2 - 0.6 speed
+        paddleSpeed = (Math.floor(Math.random() * 41) + 20) / 100;
+        break;
+      case 'medium':
+        // 0.4 - 0.8 speed
+        paddleSpeed = (Math.floor(Math.random() * 41) + 40) / 100;
+        break;
+      case 'hard':
+        // 0.5 - 0.9 speed
+        paddleSpeed = (Math.floor(Math.random() * 41) + 50) / 100;
+        break;
+      default:
+        break;
+    }
+
+    let centerBallY = this.ball.y - (this.height / 2) + (this.ball.size / 2);
+
+    if (this.y > centerBallY || this.y2 < centerBallY) {
+      this.y +=  (this.y > this.ball.y ? -1 : 1) * (this.ball.speed * paddleSpeed * 10);
+      this.y2 = this.y + this.height;
+    }
   }
 
   /**
@@ -82,6 +108,14 @@ class Paddle {
     }
 
     return false;
+  }
+
+  static set difficultyLevel(difficulty) {
+    difficultyLevel = difficulty;
+  }
+
+  static get difficultyLevel() {
+    return difficultyLevel;
   }
 }
 
