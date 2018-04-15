@@ -13,7 +13,7 @@ import Paddle from './entities/Paddle';
 // import styles
 import './styles/game.css';
 
-class Game extends Component {
+export default class Game extends Component {
   constructor(props) {
     super(props);
 
@@ -289,5 +289,3 @@ class Game extends Component {
     );
   }
 }
-
-export default Game;

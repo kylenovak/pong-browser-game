@@ -7,7 +7,7 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'public'),
-    library: 'Pong',
+    library: 'Game',
     libraryTarget: 'umd'
   },
   module: {
