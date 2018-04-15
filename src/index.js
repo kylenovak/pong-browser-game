@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
 
-import Game from './Game';
+const Game = require('./Game').default;
 
 class Main extends Component {
   render() {
