@@ -12,6 +12,7 @@ class End extends Component {
     this.messageStyle = {
       position: 'absolute',
       top: '25%',
+      margin: '0 25%',
       background: 'rgba(0, 0, 0, 0.75)'
     };
 
@@ -25,7 +26,7 @@ class End extends Component {
       <div id="end" className={`screen ${this.props.gameOver ? '' : 'hide'}`} style={this.endStyle}>
         <div style={this.messageStyle}>
           <h2>Game Over</h2>
-          <p style={{margin: '0 25%'}}>
+          <p>
             <span>{this.props.gameScore.player > this.props.gameScore.computer ? 'You Win!' : 'You Lose!'}</span>
             <button id="retry-btn" style={this.buttonStyle} onMouseDown={this.props.handleButtonClick}>Try Again?</button>
             <button id="end-btn" onMouseDown={this.props.handleButtonClick}>Home</button>
